@@ -14,4 +14,31 @@ public class LexerTests
 
         Assert.Equal(expectedKeyword, parsedToken.Kind);
     }
+
+    [Fact]
+    public void SimpleQuery()
+    {
+        var testQuery = "SELECT Field, Field2 FROM Table WHERE Field = 2";
+
+        var lexer = new Lexer(testQuery);
+        Assert.Equal(SyntaxKind.SelectToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.LiteralToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.CommaToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.LiteralToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.FromToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.LiteralToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhereToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.LiteralToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.EqualsToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.NumberToken, lexer.NextToken().Kind);
+
+    }
 }
