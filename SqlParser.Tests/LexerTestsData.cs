@@ -1,5 +1,7 @@
 namespace SqlParser.Tests;
 
+using SqlParser.Tokenization;
+
 public static class LexerTestsData
 {
     public static IEnumerable<object[]> GetKeywords()

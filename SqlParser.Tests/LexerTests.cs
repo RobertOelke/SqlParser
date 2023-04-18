@@ -1,6 +1,6 @@
 namespace SqlParser.Tests;
 
-using SqlParser;
+using SqlParser.Tokenization;
 
 public class LexerTests
 {

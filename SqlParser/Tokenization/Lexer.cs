@@ -1,4 +1,4 @@
-namespace SqlParser;
+namespace SqlParser.Tokenization;
 
 using System.Text;
 
