@@ -143,6 +143,7 @@ public sealed class Lexer
             case "SELECT": return SyntaxKind.SelectToken;
             case "FROM": return SyntaxKind.FromToken;
             case "WHERE": return SyntaxKind.WhereToken;
+            case "AS": return SyntaxKind.AsToken;
             default: return SyntaxKind.LiteralToken;
         }
     }

@@ -14,6 +14,7 @@ public enum SyntaxKind
     SelectToken,
     FromToken,
     WhereToken,
+    AsToken,
 
     // Operators
     EqualsToken,

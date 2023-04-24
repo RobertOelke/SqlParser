@@ -103,18 +103,13 @@ public sealed class Parser
                         null);
                 }
 
-            case [SyntaxKind.LiteralToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+            case [SyntaxKind.LiteralToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
                     var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
 
+                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
                     var identifier = literalTokens[0];
-                    var asKeyword = literalTokens[1];
-                    var name = literalTokens[2];
-
-                    if (asKeyword.Text(_src).ToUpper() != "AS")
-                    {
-                        return new InvalidColumnExpression(start, end - start);
-                    }
+                    var name = literalTokens[1];
 
                     return new ColumnAliasedIdentifierExpression(
                         new IdentifierExpression(identifier.Start, identifier.Length),
@@ -122,18 +117,11 @@ public sealed class Parser
                         new KeywordExpression(ExpressionKind.AsKeyword, asKeyword.Start, asKeyword.Length));
                 }
 
-            case [SyntaxKind.QuotedTextToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+            case [SyntaxKind.QuotedTextToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
-                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
-
                     var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
-                    var asKeyword = literalTokens[0];
-                    var name = literalTokens[1];
-
-                    if (asKeyword.Text(_src).ToUpper() != "AS")
-                    {
-                        return new InvalidColumnExpression(start, end - start);
-                    }
+                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
+                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
 
                     return new ColumnQuotedTextExpresstion(
                         new QuotedTextExpression(quotedText.Start, quotedText.Length),
@@ -152,19 +140,13 @@ public sealed class Parser
                         null);
                 }
 
-
-            case [SyntaxKind.NumberToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+            case [SyntaxKind.NumberToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
                     var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
 
                     var numberToken = tokens.First(x => x.Kind == SyntaxKind.NumberToken);
-                    var asKeyword = literalTokens[0];
-                    var name = literalTokens[1];
-
-                    if (asKeyword.Text(_src).ToUpper() != "AS")
-                    {
-                        return new InvalidColumnExpression(start, end - start);
-                    }
+                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
+                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
 
                     return new ColumnConstantNumberExpression(
                         new NumberExpression(numberToken.Start, numberToken.Length),
