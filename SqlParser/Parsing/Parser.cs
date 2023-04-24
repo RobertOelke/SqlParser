@@ -5,11 +5,13 @@ namespace SqlParser.Parsing;
 public sealed class Parser
 {
     private readonly SyntaxToken[] _tokens;
+    private readonly string _src;
     private int _position;
     
-    public Parser(IEnumerable<SyntaxToken> tokens)
+    public Parser(IEnumerable<SyntaxToken> tokens, string src)
     {
         _tokens = tokens.ToArray();
+        _src = src;
     }
 
     private SyntaxToken Peek(int offset)
@@ -73,7 +75,26 @@ public sealed class Parser
 
                     Next();
 
-                    return new ColumnIdentifierExpression(identifier);
+                    // " AS NAME"
+                    if (Peek(0).Kind == SyntaxKind.WhitespaceToken
+                        && Peek(1).Kind == SyntaxKind.LiteralToken
+                        && Peek(1).Text(_src).ToUpper() == "AS"
+                        && Peek(2).Kind == SyntaxKind.WhitespaceToken
+                        && Peek(3).Kind == SyntaxKind.LiteralToken)
+                    {
+                        Trim();
+                        var asKeyword = new KeywordExpression(ExpressionKind.AsKeyword, Current.Start, Current.Length);
+                        Next();
+                        Trim();
+                        var aliasName = new IdentifierExpression(Current.Start, Current.Length);
+                        Next();
+
+                        return new ColumnAliasedIdentifierExpression(identifier, asKeyword, aliasName);
+                    }
+                    else
+                    {
+                        return new ColumnIdentifierExpression(identifier);
+                    }
 
                 default:
                     while (!Current.IsColumnSeparator())

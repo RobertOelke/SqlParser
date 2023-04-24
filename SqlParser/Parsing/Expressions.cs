@@ -6,6 +6,7 @@ public enum ExpressionKind
     SelectKeyword,
     FromKeyword,
     WhereKeyword,
+    AsKeyword,
 
     Identifier,
 
@@ -59,6 +60,23 @@ public sealed class ColumnIdentifierExpression : ColumnExpression
     }
 
     public IdentifierExpression Identifier { get; }
+}
+
+public sealed class ColumnAliasedIdentifierExpression : ColumnExpression
+{
+    public ColumnAliasedIdentifierExpression(
+        IdentifierExpression identifier,
+        KeywordExpression asKeyword,
+        IdentifierExpression alias) : base(identifier.Start, alias.Start + alias.Length - identifier.Start)
+    {
+        Identifier = identifier;
+        AsKeyword = asKeyword;
+        Alias = alias;
+    }
+
+    public IdentifierExpression Identifier { get; }
+    public KeywordExpression AsKeyword { get; }
+    public IdentifierExpression Alias { get; }
 }
 
 public sealed class InvalidColumnExpression : ColumnExpression

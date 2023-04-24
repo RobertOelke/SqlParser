@@ -34,7 +34,7 @@ public class ParserTests
     {
         var emptyBatch = "";
 
-        var clauses = Clauses(new Parser(Tokens(emptyBatch)));
+        var clauses = Clauses(new Parser(Tokens(emptyBatch), emptyBatch));
 
         Assert.Single(clauses);
         Assert.Equal(SqlClauseKind.EndOfBatchClause, clauses.First().Kind);
@@ -43,10 +43,9 @@ public class ParserTests
     [Fact]
     public void ParserSimpleSelectStatement()
     {
-        // |SELECT A, C |
         var selectBatch = "SELECT A, C ";
 
-        var parser = new Parser(Tokens(selectBatch));
+        var parser = new Parser(Tokens(selectBatch), selectBatch);
 
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
@@ -60,5 +59,22 @@ public class ParserTests
         Assert.Equal("A, C", selectBatch.Substring(selectClause.ColumnList.Start, selectClause.ColumnList.Length));
 
         var _ = Assert.IsType<EndOfBatchClause>(parser.NextClause());
+    }
+
+    [Fact]
+    public void ParseSimpleSelectWithAliasedColumn()
+    {
+        var selectBatch = "SELECT A AS B, C";
+
+        var parser = new Parser(Tokens(selectBatch), selectBatch);
+
+        var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
+        Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
+        Assert.Equal(2, selectClause.ColumnList.Items.Count);
+        Assert.Equal("A AS B, C".Length, selectClause.ColumnList.Length);
+        Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
+
+        Assert.IsType<ColumnAliasedIdentifierExpression>(selectClause.ColumnList.Items[0]);
+        Assert.IsType<ColumnIdentifierExpression>(selectClause.ColumnList.Items[1]);
     }
 }
