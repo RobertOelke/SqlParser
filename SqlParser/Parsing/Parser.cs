@@ -5,13 +5,11 @@ namespace SqlParser.Parsing;
 public sealed class Parser
 {
     private readonly SyntaxToken[] _tokens;
-    private readonly string _src;
     private int _position;
     
-    public Parser(IEnumerable<SyntaxToken> tokens, string src)
+    public Parser(IEnumerable<SyntaxToken> tokens)
     {
         _tokens = tokens.ToArray();
-        _src = src;
     }
 
     private SyntaxToken Peek(int offset)
@@ -33,6 +31,7 @@ public sealed class Parser
         return Current.Kind switch
         {
             SyntaxKind.SelectToken => Select(),
+            SyntaxKind.FromToken => From(),
             SyntaxKind.EndOfFileToken => EndOfBatch(),
             _ => Unparsed(),
         };
@@ -56,6 +55,24 @@ public sealed class Parser
         return new SelectClause(
             selectKeyword,
             new ColumnListExpression(columns));
+    }
+
+    private SqlClause From()
+    {
+        var start = Current.Start;
+        var fromKeyword = Keyword(ExpressionKind.FromKeyword);
+        Next();
+
+        Trim();
+
+        if (Current.Kind == SyntaxKind.LiteralToken)
+        {
+            return new FromClause(
+                fromKeyword,
+                new NamedTableExpression(Current.Start, Current.Length));
+        }
+
+        return Unparsed(start);
     }
 
     private KeywordExpression Keyword(ExpressionKind kind, SyntaxToken? token = null)
@@ -171,9 +188,9 @@ public sealed class Parser
         return new EndOfBatchClause(new EndOfBatchExpression(Current.Start));
     }
 
-    private UnparsedClause Unparsed()
+    private UnparsedClause Unparsed(int? optionalStart = null)
     {
-        var start = Current.Start;
+        var start = optionalStart ?? Current.Start;
 
         while (Current.Kind != SyntaxKind.EndOfFileToken)
             Next();

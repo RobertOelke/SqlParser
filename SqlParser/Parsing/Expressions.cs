@@ -15,6 +15,8 @@ public enum ExpressionKind
     ColumnListExpression,
     ColumnExpression,
 
+    NamedTableExpression,
+
     Unparsed,
     EndOfBatch,
 }
@@ -41,6 +43,7 @@ public sealed class KeywordExpression : SqlExpression
     {
     }
 }
+
 public sealed class QuotedTextExpression : SqlExpression
 {
     public QuotedTextExpression(int start, int length) : base(ExpressionKind.QuotedText, start, length)
@@ -153,6 +156,21 @@ public sealed class ColumnListExpression : SqlExpression
 
     public List<ColumnExpression> Items { get; }
 }
+
+public abstract class TableExpression : SqlExpression
+{
+    protected TableExpression(ExpressionKind kind, int start, int length) : base(kind, start, length)
+    {
+    }
+}
+
+public sealed class NamedTableExpression : TableExpression
+{
+    public NamedTableExpression(int start, int length) : base(ExpressionKind.NamedTableExpression, start, length)
+    {
+    }
+}
+
 
 public sealed class EndOfBatchExpression : SqlExpression
 {

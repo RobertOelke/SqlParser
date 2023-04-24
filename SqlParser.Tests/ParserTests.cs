@@ -34,7 +34,7 @@ public class ParserTests
     {
         var emptyBatch = "";
 
-        var clauses = Clauses(new Parser(Tokens(emptyBatch), emptyBatch));
+        var clauses = Clauses(new Parser(Tokens(emptyBatch)));
 
         Assert.Single(clauses);
         Assert.Equal(SqlClauseKind.EndOfBatchClause, clauses.First().Kind);
@@ -45,7 +45,7 @@ public class ParserTests
     {
         var selectBatch = "SELECT A, C ";
 
-        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var parser = new Parser(Tokens(selectBatch));
 
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
@@ -66,7 +66,7 @@ public class ParserTests
     {
         var selectBatch = "SELECT A AS B, C";
 
-        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var parser = new Parser(Tokens(selectBatch));
 
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
@@ -89,7 +89,7 @@ public class ParserTests
     {
         var selectBatch = "SELECT 'Hello World' AS GREETING FROM DUAL";
 
-        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var parser = new Parser(Tokens(selectBatch));
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
         Assert.Single(selectClause.ColumnList.Items);
@@ -106,16 +106,21 @@ public class ParserTests
     {
         var selectBatch = "SELECT 'Hello World' GREETING FROM DUAL";
 
-        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var parser = new Parser(Tokens(selectBatch));
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
         Assert.Single(selectClause.ColumnList.Items);
         Assert.Equal("'Hello World' GREETING".Length, selectClause.ColumnList.Length);
         Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
-
         var quoted = Assert.IsType<ColumnQuotedTextExpresstion>(selectClause.ColumnList.Items.First());
-
         Assert.Equal("'Hello World'", quoted.QuotedText.Text(selectBatch));
+        var fromClause = Assert.IsType<FromClause>(parser.NextClause());
+
+        var from = fromClause.FromKeyword;
+        Assert.Equal(selectBatch.IndexOf("FROM"), from.Start);
+
+        var namedTable = Assert.IsType<NamedTableExpression>(fromClause.MainTable);
+        Assert.Equal("DUAL", namedTable.Text(selectBatch));
     }
 
     [Fact]
@@ -123,7 +128,7 @@ public class ParserTests
     {
         var selectBatch = "SELECT 3 AS NUM FROM DUAL";
 
-        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var parser = new Parser(Tokens(selectBatch));
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
         Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
         Assert.Single(selectClause.ColumnList.Items);
