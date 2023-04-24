@@ -52,10 +52,11 @@ public sealed class Lexer
             {
                 Next();
             }
-            var end = _position;
-            Next();
 
-            return new SyntaxToken(SyntaxKind.QuotedTextToken, start, end);
+            Next();
+            var end = _position;
+
+            return new SyntaxToken(SyntaxKind.QuotedTextToken, start, end - start);
         }
         else
         {

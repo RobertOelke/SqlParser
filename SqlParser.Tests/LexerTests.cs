@@ -48,7 +48,10 @@ public class LexerTests
         var lexer = new Lexer(testQuery);
         Assert.Equal(SyntaxKind.SelectToken, lexer.NextToken().Kind);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
-        Assert.Equal(SyntaxKind.QuotedTextToken, lexer.NextToken().Kind);
+        var quotedText = lexer.NextToken();
+        var helloWorld = quotedText.Text(testQuery);
+        Assert.Equal(SyntaxKind.QuotedTextToken, quotedText.Kind);
+        Assert.Equal("\"Hello World\"", helloWorld);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
     }
 }
