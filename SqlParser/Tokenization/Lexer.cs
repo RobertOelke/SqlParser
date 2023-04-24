@@ -30,7 +30,7 @@ public sealed class Lexer
     public SyntaxToken NextToken()
     {
         if (Current == '\0')
-            return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, 0, null);
+            return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, 0);
 
         return
             WhitespaceToken()
@@ -55,7 +55,7 @@ public sealed class Lexer
         {
             var current = Current.ToString();
             Next();
-            return new SyntaxToken(kind.Value, _position-1, 1, current);
+            return new SyntaxToken(kind.Value, _position - 1, 1);
         }
 
         return null;
@@ -66,10 +66,9 @@ public sealed class Lexer
     private SyntaxToken BadToken()
     {
         var start = _position;
-        var current = Current.ToString();
         Next();
 
-        return new SyntaxToken(SyntaxKind.BadIdentifierToken, start, 1, current);
+        return new SyntaxToken(SyntaxKind.BadIdentifierToken, start, 1);
     }
 
     private SyntaxKind MatchKind(string text)
@@ -101,7 +100,7 @@ public sealed class Lexer
             var end = _position;
             var text = _sb.ToString();
 
-            return new SyntaxToken(matchKind(text), start, end - start, text);
+            return new SyntaxToken(matchKind(text), start, end - start);
         }
 
         return null;

@@ -3,5 +3,5 @@
 while (lexer.NextToken() is var token
     && token.Kind != SqlParser.Tokenization.SyntaxKind.EndOfFileToken)
 {
-    System.Console.WriteLine(token);
+    Console.WriteLine(token);
 }

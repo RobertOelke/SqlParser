@@ -39,6 +39,5 @@ public class LexerTests
         Assert.Equal(SyntaxKind.EqualsToken, lexer.NextToken().Kind);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
         Assert.Equal(SyntaxKind.NumberToken, lexer.NextToken().Kind);
-
     }
 }

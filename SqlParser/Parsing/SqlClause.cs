@@ -5,11 +5,12 @@ namespace SqlParser.Parsing;
 public enum SqlClauseKind
 {
     SelectClause,
-    FromClause,
-    WhereClause,
-    OrderClause,
+    // FromClause,
+    // WhereClause,
+    // OrderClause,
 
     EndOfBatchClause,
+    UnparsableClause,
 }
 
 public abstract class SqlClause
@@ -19,15 +20,53 @@ public abstract class SqlClause
 
 public sealed class SelectClause : SqlClause
 {
+    public SelectClause(KeywordExpression selectKeyword, ColumnListExpression columnList)
+    {
+        SelectKeyword = selectKeyword;
+        ColumnList = columnList;
+    }
+
     public override SqlClauseKind Kind => SqlClauseKind.SelectClause;
+
+    public KeywordExpression SelectKeyword { get; }
+
+    public ColumnListExpression ColumnList { get; }
 }
 
-public sealed class WhereClause : SqlClause
-{
-    public override SqlClauseKind Kind => SqlClauseKind.WhereClause;
-}
+//{
+//    public SelectClause(SyntaxToken select, List<ColumnExpression> columns)
+//    {
+//        Select = select;
+//        Columns = columns;
+//    }
+
+//    public override SqlClauseKind Kind => SqlClauseKind.SelectClause;
+
+//    public SyntaxToken Select { get; }
+
+//    public List<ColumnExpression> Columns{ get; }
+//}
 
 public sealed class EndOfBatchClause : SqlClause
 {
+    public EndOfBatchClause(EndOfBatchExpression endOfBatch)
+    {
+        EndOfBatch = endOfBatch;
+    }
+
     public override SqlClauseKind Kind => SqlClauseKind.EndOfBatchClause;
+
+    public EndOfBatchExpression EndOfBatch { get; }
+}
+
+public sealed class UnparsedClause : SqlClause
+{
+    public UnparsedClause(UnparsedExpression unparsed)
+    {
+        Unparsed = unparsed;
+    }
+
+    public override SqlClauseKind Kind => SqlClauseKind.UnparsableClause;
+
+    public UnparsedExpression Unparsed { get; }
 }
