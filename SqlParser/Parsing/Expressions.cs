@@ -29,6 +29,8 @@ public abstract class SqlExpression
     public ExpressionKind Kind { get; }
     public int Start { get; }
     public int Length { get; }
+
+    public string Text(string src) => src.Substring(Start, Length);
 }
 
 public sealed class KeywordExpression : SqlExpression
@@ -66,8 +68,9 @@ public sealed class ColumnAliasedIdentifierExpression : ColumnExpression
 {
     public ColumnAliasedIdentifierExpression(
         IdentifierExpression identifier,
-        KeywordExpression asKeyword,
-        IdentifierExpression alias) : base(identifier.Start, alias.Start + alias.Length - identifier.Start)
+        IdentifierExpression alias,
+        KeywordExpression? asKeyword)
+        : base(identifier.Start, alias.Start + alias.Length - identifier.Start)
     {
         Identifier = identifier;
         AsKeyword = asKeyword;
@@ -75,8 +78,8 @@ public sealed class ColumnAliasedIdentifierExpression : ColumnExpression
     }
 
     public IdentifierExpression Identifier { get; }
-    public KeywordExpression AsKeyword { get; }
     public IdentifierExpression Alias { get; }
+    public KeywordExpression? AsKeyword { get; }
 }
 
 public sealed class InvalidColumnExpression : ColumnExpression

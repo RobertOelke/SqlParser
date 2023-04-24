@@ -74,7 +74,13 @@ public class ParserTests
         Assert.Equal("A AS B, C".Length, selectClause.ColumnList.Length);
         Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
 
-        Assert.IsType<ColumnAliasedIdentifierExpression>(selectClause.ColumnList.Items[0]);
+        var aliased = Assert.IsType<ColumnAliasedIdentifierExpression>(selectClause.ColumnList.Items[0]);
+
+        Assert.Equal("A", aliased.Identifier.Text(selectBatch));
+        Assert.NotNull(aliased.AsKeyword);
+        Assert.Equal("AS", aliased.AsKeyword.Text(selectBatch));
+        Assert.Equal("B", aliased.Alias.Text(selectBatch));
+
         Assert.IsType<ColumnIdentifierExpression>(selectClause.ColumnList.Items[1]);
     }
 }

@@ -15,4 +15,15 @@ public static class SyntaxTokenExtentions
             _ => false,
         };
     }
+
+    public static bool IsEndOfColumnExpression(this SyntaxToken token)
+    {
+        return token.Kind switch
+        {
+            SyntaxKind.CommaToken => true,
+            SyntaxKind.FromToken => true,
+            SyntaxKind.EndOfFileToken => true,
+            _ => false,
+        };
+    }
 }

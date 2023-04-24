@@ -48,6 +48,9 @@ public sealed class Parser
         while (Current.Kind != SyntaxKind.FromToken && Current.Kind != SyntaxKind.EndOfFileToken)
         {
             columns.Add(ParseColumn());
+
+            if (Current.Kind == SyntaxKind.CommaToken)
+                Next();
         }
 
         return new SelectClause(
@@ -63,54 +66,64 @@ public sealed class Parser
 
     private ColumnExpression ParseColumn()
     {
-        try
+        Trim();
+
+        var tokens = new List<SyntaxToken>();
+        var start = Current.Start;
+
+        while (!Current.IsEndOfColumnExpression())
         {
-            Trim();
-            var start = Current.Start;
-
-            switch (Current.Kind)
-            {
-                case SyntaxKind.LiteralToken:
-                    var identifier = new IdentifierExpression(Current.Start, Current.Length);
-
-                    Next();
-
-                    // " AS NAME"
-                    if (Peek(0).Kind == SyntaxKind.WhitespaceToken
-                        && Peek(1).Kind == SyntaxKind.LiteralToken
-                        && Peek(1).Text(_src).ToUpper() == "AS"
-                        && Peek(2).Kind == SyntaxKind.WhitespaceToken
-                        && Peek(3).Kind == SyntaxKind.LiteralToken)
-                    {
-                        Trim();
-                        var asKeyword = new KeywordExpression(ExpressionKind.AsKeyword, Current.Start, Current.Length);
-                        Next();
-                        Trim();
-                        var aliasName = new IdentifierExpression(Current.Start, Current.Length);
-                        Next();
-
-                        return new ColumnAliasedIdentifierExpression(identifier, asKeyword, aliasName);
-                    }
-                    else
-                    {
-                        return new ColumnIdentifierExpression(identifier);
-                    }
-
-                default:
-                    while (!Current.IsColumnSeparator())
-                        Next();
-
-                    var end = Current.Start + Current.Length;
-
-                    return new InvalidColumnExpression(start, end - start);
-            }
+            tokens.Add(Current);
+            Next();
         }
-        finally
-        {
-            Trim();
 
-            if (Current.IsColumnSeparator())
-                Next();
+        var end = Current.Start + Current.Length;
+
+
+        var trimmedTokenKinds = tokens.Select(x => x.Kind).Where(x => x != SyntaxKind.WhitespaceToken).ToList();
+
+        switch (trimmedTokenKinds)
+        {
+            case [SyntaxKind.LiteralToken]:
+                {
+                    var identifier = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+                    return new ColumnIdentifierExpression(new IdentifierExpression(identifier.Start, identifier.Length));
+                }
+
+            case [SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+                {
+                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
+
+                    var identifier = literalTokens[0];
+                    var name = literalTokens[1];
+
+                    return new ColumnAliasedIdentifierExpression(
+                        new IdentifierExpression(identifier.Start, identifier.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        null);
+                }
+
+            case [SyntaxKind.LiteralToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+                {
+                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
+
+                    var identifier = literalTokens[0];
+                    var asKeyword = literalTokens[1];
+                    var name = literalTokens[2];
+
+                    if (asKeyword.Text(_src).ToUpper() != "AS")
+                    {
+                        return new InvalidColumnExpression(start, end - start);
+                    }
+
+                    return new ColumnAliasedIdentifierExpression(
+                        new IdentifierExpression(identifier.Start, identifier.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        new KeywordExpression(ExpressionKind.AsKeyword, asKeyword.Start, asKeyword.Length));
+                }
+
+            default:
+                return new InvalidColumnExpression(start, end - start);
         }
     }
 
