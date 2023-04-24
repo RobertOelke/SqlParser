@@ -40,4 +40,15 @@ public class LexerTests
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
         Assert.Equal(SyntaxKind.NumberToken, lexer.NextToken().Kind);
     }
+
+    [Fact]
+    public void LexQuotedText()
+    {
+        var testQuery = "SELECT \"Hello World\" AS Text FROM DUAL";
+        var lexer = new Lexer(testQuery);
+        Assert.Equal(SyntaxKind.SelectToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.QuotedTextToken, lexer.NextToken().Kind);
+        Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
+    }
 }

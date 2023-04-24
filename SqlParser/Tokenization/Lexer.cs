@@ -34,12 +34,34 @@ public sealed class Lexer
 
         return
             WhitespaceToken()
+            ?? QuotedTextToken()
             ?? CharToken()
             ?? TextToken()
             ?? BadToken();
     }
 
     private SyntaxToken? WhitespaceToken() => CheckStringToken(char.IsWhiteSpace, _ => SyntaxKind.WhitespaceToken);
+
+    private SyntaxToken? QuotedTextToken()
+    {
+        var start = _position;
+        if (Current == '"')
+        {
+            Next();
+            while(Current != '"')
+            {
+                Next();
+            }
+            var end = _position;
+            Next();
+
+            return new SyntaxToken(SyntaxKind.QuotedTextToken, start, end);
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     private SyntaxToken? CharToken()
     {
@@ -53,7 +75,6 @@ public sealed class Lexer
 
         if (kind.HasValue)
         {
-            var current = Current.ToString();
             Next();
             return new SyntaxToken(kind.Value, _position - 1, 1);
         }

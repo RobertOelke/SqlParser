@@ -4,6 +4,10 @@ public enum SyntaxKind
 {
     LiteralToken,
     NumberToken,
+    // "Text ..."
+    QuotedTextToken,
+    // ToDo: 'Column Name'
+    // QuotedIdentifierToken,
     WhitespaceToken,
 
     // Keywords
