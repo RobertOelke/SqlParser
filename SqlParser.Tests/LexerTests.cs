@@ -44,14 +44,14 @@ public class LexerTests
     [Fact]
     public void LexQuotedText()
     {
-        var testQuery = "SELECT \"Hello World\" AS Text FROM DUAL";
+        var testQuery = "SELECT 'Hello World' AS Text FROM DUAL";
         var lexer = new Lexer(testQuery);
         Assert.Equal(SyntaxKind.SelectToken, lexer.NextToken().Kind);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
         var quotedText = lexer.NextToken();
         var helloWorld = quotedText.Text(testQuery);
         Assert.Equal(SyntaxKind.QuotedTextToken, quotedText.Kind);
-        Assert.Equal("\"Hello World\"", helloWorld);
+        Assert.Equal("'Hello World'", helloWorld);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
     }
 }

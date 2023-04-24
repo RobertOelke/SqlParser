@@ -45,10 +45,10 @@ public sealed class Lexer
     private SyntaxToken? QuotedTextToken()
     {
         var start = _position;
-        if (Current == '"')
+        if (Current == '\'')
         {
             Next();
-            while(Current != '"')
+            while(Current != '\'')
             {
                 Next();
             }

@@ -122,6 +122,33 @@ public sealed class Parser
                         new KeywordExpression(ExpressionKind.AsKeyword, asKeyword.Start, asKeyword.Length));
                 }
 
+            case [SyntaxKind.QuotedTextToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+                {
+                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
+
+                    var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
+                    var asKeyword = literalTokens[0];
+                    var name = literalTokens[1];
+
+                    return new ColumnQuotedTextExpresstion(
+                        new QuotedTextExpression(quotedText.Start, quotedText.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        new KeywordExpression(ExpressionKind.AsKeyword, asKeyword.Start, asKeyword.Length));
+                }
+
+            case [SyntaxKind.QuotedTextToken, SyntaxKind.LiteralToken]:
+                {
+                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
+
+                    var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
+                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+
+                    return new ColumnQuotedTextExpresstion(
+                        new QuotedTextExpression(quotedText.Start, quotedText.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        null);
+                }
+
             default:
                 return new InvalidColumnExpression(start, end - start);
         }

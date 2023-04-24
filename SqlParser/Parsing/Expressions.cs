@@ -9,6 +9,7 @@ public enum ExpressionKind
     AsKeyword,
 
     Identifier,
+    QuotedText,
 
     ColumnListExpression,
     ColumnExpression,
@@ -39,6 +40,12 @@ public sealed class KeywordExpression : SqlExpression
     {
     }
 }
+public sealed class QuotedTextExpression : SqlExpression
+{
+    public QuotedTextExpression(int start, int length) : base(ExpressionKind.QuotedText, start, length)
+    {
+    }
+}
 
 public sealed class IdentifierExpression : SqlExpression
 {
@@ -62,6 +69,24 @@ public sealed class ColumnIdentifierExpression : ColumnExpression
     }
 
     public IdentifierExpression Identifier { get; }
+}
+
+public sealed class ColumnQuotedTextExpresstion : ColumnExpression
+{
+    public ColumnQuotedTextExpresstion(
+        QuotedTextExpression quotedText,
+        IdentifierExpression alias,
+        KeywordExpression? asKeyword)
+        : base(quotedText.Start, alias.Start + alias.Length - quotedText.Start)
+    {
+        QuotedText = quotedText;
+        Alias = alias;
+        AsKeyword = asKeyword;
+    }
+
+    public QuotedTextExpression QuotedText { get; }
+    public IdentifierExpression Alias { get; }
+    public KeywordExpression? AsKeyword { get; }
 }
 
 public sealed class ColumnAliasedIdentifierExpression : ColumnExpression

@@ -83,4 +83,38 @@ public class ParserTests
 
         Assert.IsType<ColumnIdentifierExpression>(selectClause.ColumnList.Items[1]);
     }
+
+    [Fact]
+    public void ParseHelloWorldWithAsFromDual()
+    {
+        var selectBatch = "SELECT 'Hello World' AS GREETING FROM DUAL";
+
+        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
+        Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
+        Assert.Single(selectClause.ColumnList.Items);
+        Assert.Equal("'Hello World' AS GREETING".Length, selectClause.ColumnList.Length);
+        Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
+
+        var quoted = Assert.IsType<ColumnQuotedTextExpresstion>(selectClause.ColumnList.Items.First());
+
+        Assert.Equal("'Hello World'", quoted.QuotedText.Text(selectBatch));
+    }
+
+    [Fact]
+    public void ParseHelloWorldFromDual()
+    {
+        var selectBatch = "SELECT 'Hello World' GREETING FROM DUAL";
+
+        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
+        Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
+        Assert.Single(selectClause.ColumnList.Items);
+        Assert.Equal("'Hello World' GREETING".Length, selectClause.ColumnList.Length);
+        Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
+
+        var quoted = Assert.IsType<ColumnQuotedTextExpresstion>(selectClause.ColumnList.Items.First());
+
+        Assert.Equal("'Hello World'", quoted.QuotedText.Text(selectBatch));
+    }
 }
