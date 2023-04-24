@@ -1,13 +1,8 @@
-using SqlParser.Tokenization;
-
 namespace SqlParser.Parsing;
 
 public enum SqlClauseKind
 {
     SelectClause,
-    // FromClause,
-    // WhereClause,
-    // OrderClause,
 
     EndOfBatchClause,
     UnparsableClause,
@@ -32,20 +27,6 @@ public sealed class SelectClause : SqlClause
 
     public ColumnListExpression ColumnList { get; }
 }
-
-//{
-//    public SelectClause(SyntaxToken select, List<ColumnExpression> columns)
-//    {
-//        Select = select;
-//        Columns = columns;
-//    }
-
-//    public override SqlClauseKind Kind => SqlClauseKind.SelectClause;
-
-//    public SyntaxToken Select { get; }
-
-//    public List<ColumnExpression> Columns{ get; }
-//}
 
 public sealed class EndOfBatchClause : SqlClause
 {
