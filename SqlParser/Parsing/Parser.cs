@@ -130,6 +130,11 @@ public sealed class Parser
                     var asKeyword = literalTokens[0];
                     var name = literalTokens[1];
 
+                    if (asKeyword.Text(_src).ToUpper() != "AS")
+                    {
+                        return new InvalidColumnExpression(start, end - start);
+                    }
+
                     return new ColumnQuotedTextExpresstion(
                         new QuotedTextExpression(quotedText.Start, quotedText.Length),
                         new IdentifierExpression(name.Start, name.Length),
@@ -138,13 +143,42 @@ public sealed class Parser
 
             case [SyntaxKind.QuotedTextToken, SyntaxKind.LiteralToken]:
                 {
-                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
-
                     var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
                     var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
 
                     return new ColumnQuotedTextExpresstion(
                         new QuotedTextExpression(quotedText.Start, quotedText.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        null);
+                }
+
+
+            case [SyntaxKind.NumberToken, SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
+                {
+                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
+
+                    var numberToken = tokens.First(x => x.Kind == SyntaxKind.NumberToken);
+                    var asKeyword = literalTokens[0];
+                    var name = literalTokens[1];
+
+                    if (asKeyword.Text(_src).ToUpper() != "AS")
+                    {
+                        return new InvalidColumnExpression(start, end - start);
+                    }
+
+                    return new ColumnConstantNumberExpression(
+                        new NumberExpression(numberToken.Start, numberToken.Length),
+                        new IdentifierExpression(name.Start, name.Length),
+                        new KeywordExpression(ExpressionKind.AsKeyword, asKeyword.Start, asKeyword.Length));
+                }
+
+            case [SyntaxKind.NumberToken, SyntaxKind.LiteralToken]:
+                {
+                    var numberToken = tokens.First(x => x.Kind == SyntaxKind.NumberToken);
+                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+
+                    return new ColumnConstantNumberExpression(
+                        new NumberExpression(numberToken.Start, numberToken.Length),
                         new IdentifierExpression(name.Start, name.Length),
                         null);
                 }

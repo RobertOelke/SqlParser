@@ -117,4 +117,21 @@ public class ParserTests
 
         Assert.Equal("'Hello World'", quoted.QuotedText.Text(selectBatch));
     }
+
+    [Fact]
+    public void ParseSelect3FromDual()
+    {
+        var selectBatch = "SELECT 3 AS NUM FROM DUAL";
+
+        var parser = new Parser(Tokens(selectBatch), selectBatch);
+        var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
+        Assert.Equal(SqlClauseKind.SelectClause, selectClause.Kind);
+        Assert.Single(selectClause.ColumnList.Items);
+        Assert.Equal("3 AS NUM".Length, selectClause.ColumnList.Length);
+        Assert.Equal("SELECT ".Length, selectClause.ColumnList.Start);
+
+        var number = Assert.IsType<ColumnConstantNumberExpression>(selectClause.ColumnList.Items.First());
+
+        Assert.Equal("3", number.Number.Text(selectBatch));
+    }
 }
