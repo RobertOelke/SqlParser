@@ -79,23 +79,23 @@ public sealed class Parser
 
         var end = Current.Start + Current.Length;
 
-
-        var trimmedTokenKinds = tokens.Select(x => x.Kind).Where(x => x != SyntaxKind.WhitespaceToken).ToList();
+        var trimmedTokens = tokens.Where(x => x.Kind != SyntaxKind.WhitespaceToken).ToArray();
+        var trimmedTokenKinds = trimmedTokens.Select(x => x.Kind).ToArray();
 
         switch (trimmedTokenKinds)
         {
             case [SyntaxKind.LiteralToken]:
                 {
-                    var identifier = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
-                    return new ColumnIdentifierExpression(new IdentifierExpression(identifier.Start, identifier.Length));
+                    var identifier = trimmedTokens[0];
+
+                    return new ColumnIdentifierExpression(
+                        new IdentifierExpression(identifier.Start, identifier.Length));
                 }
 
             case [SyntaxKind.LiteralToken, SyntaxKind.LiteralToken]:
                 {
-                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
-
-                    var identifier = literalTokens[0];
-                    var name = literalTokens[1];
+                    var identifier = trimmedTokens[0];
+                    var name = trimmedTokens[1];
 
                     return new ColumnAliasedIdentifierExpression(
                         new IdentifierExpression(identifier.Start, identifier.Length),
@@ -105,11 +105,9 @@ public sealed class Parser
 
             case [SyntaxKind.LiteralToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
-                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
-
-                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
-                    var identifier = literalTokens[0];
-                    var name = literalTokens[1];
+                    var identifier = trimmedTokens[0];
+                    var asKeyword = trimmedTokens[1];
+                    var name = trimmedTokens[2];
 
                     return new ColumnAliasedIdentifierExpression(
                         new IdentifierExpression(identifier.Start, identifier.Length),
@@ -119,9 +117,9 @@ public sealed class Parser
 
             case [SyntaxKind.QuotedTextToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
-                    var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
-                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
-                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+                    var quotedText = trimmedTokens[0];
+                    var asKeyword = trimmedTokens[1];
+                    var name = trimmedTokens[2];
 
                     return new ColumnQuotedTextExpresstion(
                         new QuotedTextExpression(quotedText.Start, quotedText.Length),
@@ -131,8 +129,8 @@ public sealed class Parser
 
             case [SyntaxKind.QuotedTextToken, SyntaxKind.LiteralToken]:
                 {
-                    var quotedText = tokens.First(x => x.Kind == SyntaxKind.QuotedTextToken);
-                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+                    var quotedText = trimmedTokens[0];
+                    var name = trimmedTokens[1];
 
                     return new ColumnQuotedTextExpresstion(
                         new QuotedTextExpression(quotedText.Start, quotedText.Length),
@@ -142,11 +140,9 @@ public sealed class Parser
 
             case [SyntaxKind.NumberToken, SyntaxKind.AsToken, SyntaxKind.LiteralToken]:
                 {
-                    var literalTokens = tokens.Where(x => x.Kind == SyntaxKind.LiteralToken).ToList();
-
-                    var numberToken = tokens.First(x => x.Kind == SyntaxKind.NumberToken);
-                    var asKeyword = tokens.First(x => x.Kind == SyntaxKind.AsToken);
-                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+                    var numberToken = trimmedTokens[0];
+                    var asKeyword = trimmedTokens[1];
+                    var name = trimmedTokens[2];
 
                     return new ColumnConstantNumberExpression(
                         new NumberExpression(numberToken.Start, numberToken.Length),
@@ -156,8 +152,8 @@ public sealed class Parser
 
             case [SyntaxKind.NumberToken, SyntaxKind.LiteralToken]:
                 {
-                    var numberToken = tokens.First(x => x.Kind == SyntaxKind.NumberToken);
-                    var name = tokens.First(x => x.Kind == SyntaxKind.LiteralToken);
+                    var numberToken = trimmedTokens[0];
+                    var name = trimmedTokens[1];
 
                     return new ColumnConstantNumberExpression(
                         new NumberExpression(numberToken.Start, numberToken.Length),
