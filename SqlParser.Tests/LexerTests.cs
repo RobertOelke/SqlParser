@@ -54,4 +54,19 @@ public class LexerTests
         Assert.Equal("'Hello World'", helloWorld);
         Assert.Equal(SyntaxKind.WhitespaceToken, lexer.NextToken().Kind);
     }
+
+    [Theory]
+    [InlineData("1")]
+    [InlineData("-1")]
+    [InlineData("1.2")]
+    [InlineData("-1.2")]
+    [InlineData("100")]
+    [InlineData("100.200")]
+    public void LexNumber(string testNumber)
+    {
+        var lexer = new Lexer(testNumber);
+        var parsedNumber = lexer.NextToken();
+        Assert.Equal(SyntaxKind.NumberToken, parsedNumber.Kind);
+        Assert.Equal(testNumber.Length, parsedNumber.Length);
+    }
 }

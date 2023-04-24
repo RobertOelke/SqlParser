@@ -36,6 +36,7 @@ public sealed class Lexer
             WhitespaceToken()
             ?? QuotedTextToken()
             ?? CharToken()
+            ?? NumberToken()
             ?? TextToken()
             ?? BadToken();
     }
@@ -60,6 +61,48 @@ public sealed class Lexer
         }
         else
         {
+            return null;
+        }
+    }
+
+    // [-]123[.456]
+    private SyntaxToken? NumberToken()
+    {
+        int startAnchor = _position;
+
+        var hasDigit = false;
+        var start = _position;
+
+        if (Current == '-')
+            Next();
+
+        while (char.IsDigit(Current))
+        {
+            Next();
+            hasDigit = true;
+        }
+
+        if (Current == '.')
+        {
+            Next();
+            hasDigit = false;
+        }
+
+        while (char.IsDigit(Current))
+        {
+            Next();
+            hasDigit = true;
+        }
+
+        var end = _position;
+
+        if (hasDigit)
+        {
+            return new SyntaxToken(SyntaxKind.NumberToken, start, end - start);
+        }
+        else
+        {
+            _position = startAnchor;
             return null;
         }
     }
@@ -95,9 +138,6 @@ public sealed class Lexer
 
     private SyntaxKind MatchKind(string text)
     {
-        if (int.TryParse(text, out var _))
-            return SyntaxKind.NumberToken;
-
         switch (text.ToUpperInvariant())
         {
             case "SELECT": return SyntaxKind.SelectToken;
