@@ -4,6 +4,7 @@ public enum SqlClauseKind
 {
     SelectClause,
     FromClause,
+    WhereClause,
 
     EndOfBatchClause,
     UnparsableClause,
@@ -42,6 +43,21 @@ public sealed class FromClause : SqlClause
     public KeywordExpression FromKeyword { get; }
 
     public TableExpression MainTable { get; }
+}
+
+public sealed class WhereClause : SqlClause
+{
+    public WhereClause(KeywordExpression whereKeyword, BooleanExpression rootExpression)
+    {
+        WhereKeyword = whereKeyword;
+        RootExpression = rootExpression;
+    }
+
+    public override SqlClauseKind Kind => SqlClauseKind.WhereClause;
+
+    public KeywordExpression WhereKeyword { get; }
+
+    public BooleanExpression RootExpression { get; }
 }
 
 public sealed class EndOfBatchClause : SqlClause

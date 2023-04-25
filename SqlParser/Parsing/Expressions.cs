@@ -17,6 +17,10 @@ public enum ExpressionKind
 
     NamedTableExpression,
 
+    BoolenExpression,
+
+    EqualsSymbol,
+
     Unparsed,
     EndOfBatch,
 }
@@ -171,6 +175,30 @@ public sealed class NamedTableExpression : TableExpression
     }
 }
 
+public class BooleanExpression : SqlExpression
+{
+    public BooleanExpression(
+        OperatorExpression op,
+        SqlExpression left,
+        SqlExpression right) 
+        : base(ExpressionKind.BoolenExpression, left.Start, right.Start + right.Length - left.Start)
+    {
+        Operator = op;
+        Left = left;
+        Right = right;
+    }
+
+    public OperatorExpression Operator { get; }
+    public SqlExpression Left { get; }
+    public SqlExpression Right { get; }
+}
+
+public class OperatorExpression : SqlExpression
+{
+    public OperatorExpression(ExpressionKind kind, int start, int length) : base(kind, start, length)
+    {
+    }
+}
 
 public sealed class EndOfBatchExpression : SqlExpression
 {

@@ -32,6 +32,7 @@ public sealed class Parser
         {
             SyntaxKind.SelectToken => Select(),
             SyntaxKind.FromToken => From(),
+            SyntaxKind.WhereToken => Where(),
             SyntaxKind.EndOfFileToken => EndOfBatch(),
             _ => Unparsed(),
         };
@@ -67,12 +68,48 @@ public sealed class Parser
 
         if (Current.Kind == SyntaxKind.LiteralToken)
         {
+            var table = Current;
+            Next();
+
+            Trim();
+
             return new FromClause(
                 fromKeyword,
-                new NamedTableExpression(Current.Start, Current.Length));
+                new NamedTableExpression(table.Start, table.Length));
         }
 
         return Unparsed(start);
+    }
+
+    private SqlClause Where()
+    {
+        var start = Current.Start;
+        var whereKeyword = Keyword(ExpressionKind.WhereKeyword);
+        Next();
+
+        Trim();
+
+        var rootExpression = ParseBooleanExpression();
+
+        return new WhereClause(whereKeyword, rootExpression);
+    }
+
+    private BooleanExpression ParseBooleanExpression()
+    {
+        var left = Current;
+        Next();
+        Trim();
+        var op = Current;
+        Next();
+        Trim();
+        var rigth = Current;
+        Next();
+        Trim();
+
+        return new BooleanExpression(
+            new OperatorExpression(ExpressionKind.EqualsSymbol, op.Start, op.Length),
+            new NumberExpression(left.Start, left.Length),
+            new NumberExpression(rigth.Start, rigth.Length));
     }
 
     private KeywordExpression Keyword(ExpressionKind kind, SyntaxToken? token = null)

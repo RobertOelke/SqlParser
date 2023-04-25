@@ -126,7 +126,7 @@ public class ParserTests
     [Fact]
     public void ParseSelect3FromDual()
     {
-        var selectBatch = "SELECT 3 AS NUM FROM DUAL";
+        var selectBatch = "SELECT 3 AS NUM FROM DUAL WHERE 1 = 1";
 
         var parser = new Parser(Tokens(selectBatch));
         var selectClause = Assert.IsType<SelectClause>(parser.NextClause());
@@ -138,5 +138,11 @@ public class ParserTests
         var number = Assert.IsType<ColumnConstantNumberExpression>(selectClause.ColumnList.Items.First());
 
         Assert.Equal("3", number.Number.Text(selectBatch));
+
+        var fromClause = Assert.IsType<FromClause>(parser.NextClause());
+
+        var whereClause = Assert.IsType<WhereClause>(parser.NextClause());
+
+        Assert.Equal("1 = 1", whereClause.RootExpression.Text(selectBatch));
     }
 }
