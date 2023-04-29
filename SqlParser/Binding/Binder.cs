@@ -20,6 +20,8 @@ public sealed class Binder
         _src = src;
     }
 
+    public IEnumerable<Diagnostic> Diagnostics => _diagnostics;
+
     public BoundSelectStatement BindSelect()
     {
         var clauses = ReadToEnd().ToArray();

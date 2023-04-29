@@ -23,6 +23,9 @@ public static class Program
                 case "exit":
                     cancelRequested = true;
                     break;
+                case string select when select.ToUpper().StartsWith("SELECT "):
+                    Select.Handle(select);
+                    break;
                 default:
                     PrintUnkownCommand(line);
                     break;
@@ -35,9 +38,9 @@ public static class Program
 
     private static void PrintHelp()
     {
-        Console.WriteLine("| 'help'  => lists all commands.");
-        Console.WriteLine("| 'clear' => clears the console.");
-        Console.WriteLine("| 'exit'  => exits the program.");
+        Console.WriteLine("├ 'help'  => lists all commands.");
+        Console.WriteLine("├ 'clear' => clears the console.");
+        Console.WriteLine("└ 'exit'  => exits the program.");
     }
 
     private static void HandleClear()
@@ -47,7 +50,7 @@ public static class Program
 
     private static void PrintUnkownCommand(string? line)
     {
-        Console.WriteLine($"| Unknown command '{line}'");
-        Console.WriteLine($"| Try 'help' to see all available commands");
+        Console.WriteLine($"├ Unknown command '{line}'");
+        Console.WriteLine("├ Try 'help' to see all available commands");
     }
 }
