@@ -3,17 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlParser", "SqlParser\SqlParser.csproj", "{27F5CA37-681B-4BC2-8623-79D0C1635ACC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlParser", "SqlParser\SqlParser.csproj", "{27F5CA37-681B-4BC2-8623-79D0C1635ACC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlParser.Tests", "SqlParser.Tests\SqlParser.Tests.csproj", "{2762BEC6-10B7-44AD-8B96-437F3D8D7510}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlParser.Tests", "SqlParser.Tests\SqlParser.Tests.csproj", "{2762BEC6-10B7-44AD-8B96-437F3D8D7510}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlParser.Repl", "SqlParser.Repl\SqlParser.Repl.csproj", "{A15C0E2F-B013-40FD-89F2-20E2E453B43E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{27F5CA37-681B-4BC2-8623-79D0C1635ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -24,5 +23,12 @@ Global
 		{2762BEC6-10B7-44AD-8B96-437F3D8D7510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2762BEC6-10B7-44AD-8B96-437F3D8D7510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2762BEC6-10B7-44AD-8B96-437F3D8D7510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A15C0E2F-B013-40FD-89F2-20E2E453B43E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A15C0E2F-B013-40FD-89F2-20E2E453B43E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A15C0E2F-B013-40FD-89F2-20E2E453B43E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A15C0E2F-B013-40FD-89F2-20E2E453B43E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
