@@ -8,11 +8,7 @@ public static class Select
 {
     public static void Handle(string sql)
     {
-        var tableBuilder = ImmutableList.CreateBuilder<TableData>();
-
-        var dataContext = new DataContext(tableBuilder.ToImmutableList());
-
-        var compilation = Compilation.Select(sql, dataContext);
+        var compilation = Compilation.Select(sql, DefaultContext);
         Console.WriteLine($"└─> Formated:");
         Console.WriteLine($"  ├ {compilation.Formated}");
         var warningCount = compilation.Diagnostics.Count(d => d.Severity == Diagnostics.DiagnosticSeverity.Warning);
@@ -73,5 +69,24 @@ public static class Select
         Console.ResetColor();
         Console.WriteLine(afterWarning);
         Console.WriteLine($"    │ {start}└─> {diagnostic.Message}");
+    }
+
+    private static DataContext DefaultContext
+    {
+        get
+        {
+            var tableBuilder = ImmutableList.CreateBuilder<TableData>();
+
+            tableBuilder.Add(
+                new TableData(
+                    "DUAL",
+                    ImmutableList.Create(
+                        new ColumnData("DUMMY")))
+            );
+
+            var dataContext = new DataContext(tableBuilder.ToImmutableList());
+
+            return dataContext;
+        }
     }
 }
