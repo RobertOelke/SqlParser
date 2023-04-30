@@ -1,4 +1,5 @@
 ﻿using SqlParser.Data;
+using SqlParser.Diagnostics;
 using System.Collections.Immutable;
 
 namespace SqlParser.Repl;
@@ -38,10 +39,39 @@ public static class Select
                     }
                     break;
 
+                case "errors":
+                    foreach (var error in compilation.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error))
+                    {
+                        PrintDiagnostic(compilation, error);
+                    }
+                    break;
+
+                case "warnings":
+                    foreach (var warning in compilation.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning))
+                    {
+                        PrintDiagnostic(compilation, warning);
+                    }
+                    break;
+
                 case "exit":
                     cancelRequested = true;
                     break;
             }
         }
+    }
+
+    private static void PrintDiagnostic(SelectCompilation compilation, Diagnostic diagnostic)
+    {
+        var start = new string(' ', diagnostic.Start);
+        var beforeWarning = compilation.Sql[..diagnostic.Start];
+        var warningText = compilation.Sql.Substring(diagnostic.Start, diagnostic.Length);
+        var afterWarning = compilation.Sql[(diagnostic.Start + diagnostic.Length)..];
+
+        Console.Write($"    ├ {beforeWarning}");
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.Write(warningText);
+        Console.ResetColor();
+        Console.WriteLine(afterWarning);
+        Console.WriteLine($"    │ {start}└─> {diagnostic.Message}");
     }
 }
