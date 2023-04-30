@@ -126,7 +126,7 @@ public sealed class Lexer
         return null;
     }
 
-    private SyntaxToken? TextToken() => CheckStringToken(char.IsLetterOrDigit, MatchKind);
+    private SyntaxToken? TextToken() => CheckStringToken(IsAllowedCharForText, MatchKind);
 
     private SyntaxToken BadToken()
     {
@@ -167,5 +167,17 @@ public sealed class Lexer
         }
 
         return null;
+    }
+
+    private static bool IsAllowedCharForText(char c)
+    {
+        if (char.IsLetterOrDigit(c))
+            return true;
+
+        return c switch
+        {
+            '_' => true,
+            _ => false,
+        };
     }
 }

@@ -18,7 +18,7 @@ public class LexerTests
     [Fact]
     public void SimpleQuery()
     {
-        var testQuery = "SELECT Field, Field2 FROM Table WHERE Field = 2";
+        var testQuery = "SELECT Field, Field_2 FROM Table WHERE Field = 2";
 
         var lexer = new Lexer(testQuery);
         Assert.Equal(SyntaxKind.SelectToken, lexer.NextToken().Kind);
