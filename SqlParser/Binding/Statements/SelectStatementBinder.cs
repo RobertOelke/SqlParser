@@ -12,7 +12,7 @@ internal static class SelectStatementBinder
 
         var columns = GetBoundColumns(context);
 
-        var selectionList = selectionBuilder.ToImmutableList();
+        var selectionList = selectionBuilder;
 
         for (int i = 0; i < context.Statement.Select.ColumnList.Items.Count; i++)
         {
@@ -21,7 +21,8 @@ internal static class SelectStatementBinder
 
             var colData = columns.FirstOrDefault(c => string.Equals(c.Name, colName, StringComparison.InvariantCultureIgnoreCase));
 
-            var boundData = new BoundColumn(i, col.Text(context.Src).ToUpperInvariant(), colData ?? new ColumnData("<unknown>"));
+            var boundData = new BoundColumn(i, col.Text(context.Src).ToUpperInvariant(), colData);
+            selectionList.Add(boundData);
 
             if (colData == null)
             {
@@ -29,7 +30,7 @@ internal static class SelectStatementBinder
             }
         }
 
-        return new BoundSelectStatement(selectionList);
+        return new BoundSelectStatement(selectionList.ToImmutableList());
     }
 
     public static IEnumerable<ColumnData> GetBoundColumns(BinderContext<SelectStatementData> context)

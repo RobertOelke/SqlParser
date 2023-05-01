@@ -1,4 +1,5 @@
-﻿using SqlParser.Data;
+﻿using SqlParser.Binding;
+using SqlParser.Data;
 using SqlParser.Diagnostics;
 using System.Collections.Immutable;
 
@@ -25,6 +26,8 @@ public static class Select
         {
             Console.Write("  > ");
             var line = Console.ReadLine();
+            if (line == null)
+                continue;
 
             switch (line)
             {
@@ -51,6 +54,21 @@ public static class Select
 
                 case "exit":
                     cancelRequested = true;
+                    break;
+
+                default:
+                    if (line.StartsWith("?"))
+                    {
+                        var what = line[1..];
+
+                        var matchingColumn = compilation.BoundSelect.Selection.FirstOrDefault(s => string.Equals(s.Name, what, StringComparison.InvariantCultureIgnoreCase));
+
+                        if (matchingColumn?.BoundData is ColumnData data)
+                        {
+                            Console.WriteLine($"    ├ {data.Name} {data.DataType}");
+                        }
+                    }
+
                     break;
             }
         }
@@ -81,7 +99,9 @@ public static class Select
                 new TableData(
                     "DUAL",
                     ImmutableList.Create(
-                        new ColumnData("DUMMY")))
+                        new ColumnData(
+                            1, "DUMMY", ColumnType.Varchar2, 1, null, null, 1, true 
+                        )))
             );
 
             var dataContext = new DataContext(tableBuilder.ToImmutableList());
